@@ -1,70 +1,129 @@
-# Getting Started with Create React App
+﻿# React Quiz App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A functional quiz application built with React and `useReducer` state management. Questions are fetched from a local JSON API powered by `json-server`, with timer and scoring features.
 
-## Available Scripts
+##  App Overview
 
-In the project directory, you can run:
+- Loads question data from `http://localhost:8000/questions` (via `data/questions.json`).
+- Handles states: `loading`, `error`, `ready`, `active`, `finished`.
+- Includes:
+  - start screen
+  - question + multiple-choice answer buttons
+  - immediate feedback (correct/wrong)
+  - next question flow
+  - progress bar
+  - countdown timer (30s per question)
+  - points + high score tracking
 
-### `npm start`
+##  Component Breakdown
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- `src/App.js`
+  - `useReducer` for app state
+  - fetches questions using `useEffect`
+  - renders screens based on `status`
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- `src/Header.js`
+  - static header and app title
 
-### `npm test`
+- `src/Loader.js`
+  - shows loading UI while questions load
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- `src/Error.js`
+  - shows fetch error message
 
-### `npm run build`
+- `src/StartScreen.jsx`
+  - displays question count and start button
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- `src/Question.jsx`
+  - renders current question text
+  - `Options` handles choice buttons and styling states
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- `src/NextBtn.jsx`
+  - visible after answer selected
+  - dispatches `nextQuestion` or `finishQuestions`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- `src/Progress.jsx`
+  - progress bar and points scoreboard
 
-### `npm run eject`
+- `src/Timer.jsx`
+  - counts down seconds with `setInterval`
+  - dispatches `tick`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- `src/FinishScreen.jsx`
+  - final score and high score
+  - restart button dispatches `restart`
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- `src/Main.jsx` and `src/Footer.jsx`
+  - simple layout wrappers
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+##  Data Source
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+`data/questions.json` includes a question set with:
+- `question` (string)
+- `options` (array)
+- `correctOption` (index of correct answer)
+- `points` (int)
 
-## Learn More
+`json-server` exposes this as `/questions`.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+##  Scripts
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+In `package.json`:
 
-### Code Splitting
+- `npm start`  run React app at `http://localhost:3000`
+- `npm run server`  run API server at `http://localhost:8000` (json-server)
+- `npm test`  run test watcher
+- `npm run build`  production bundle
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+##  Setup & Run
 
-### Analyzing the Bundle Size
+1. Install dependencies:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```bash
+npm install
+```
 
-### Making a Progressive Web App
+2. Start the mock API server:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```bash
+npm run server
+```
 
-### Advanced Configuration
+3. In a separate terminal, start React:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```bash
+npm start
+```
 
-### Deployment
+4. Open: `http://localhost:3000`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+##  Game Flow
 
-### `npm run build` fails to minify
+1. Load app (status `loading`)
+2. fetch questions  `ready`
+3. click "Let't Start"  `active`
+4. Timer starts with `questions.length * 30`
+5. Choose an answer:
+   - correct = add question points
+   - wrong = keep points
+6. click `Next` until final question
+7. `finished` screen: score + high score
+8. `Restart` resets progress and keeps highs
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+##  Notes / Troubleshooting
+
+- If questions fail to load, ensure `npm run server` is running and port 8000 is free.
+- `Error` screen is shown when fetch fails.
+- The timer runs on `active` and ends quiz when it hits `0`.
+
+##  Extension ideas
+
+- Add categories and difficulty levels
+- Add local storage for high score + answered history
+- Add Progressive Enhancement for keyboard controls
+- Add animation and transitions
+- Add per-question time bonus/penalty
+
+---
+
+> Built as part of React learning projects to demonstrate hooks, reducer patterns, and data-driven UI.
